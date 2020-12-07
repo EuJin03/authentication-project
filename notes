@@ -1,0 +1,35 @@
+//bcrypt register post request
+  .post((req, res) => {
+
+    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+      const newUser = new User({
+        username: req.body.username,
+        password: hash
+      })
+      newUser.save(function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render('secrets');
+        }
+      })
+    })
+
+//bcrypt login post request
+    User.findOne({
+      username: username
+    }, function (err, foundUser) {
+      if (err) {
+        console.log(err);
+      }
+      if (foundUser) {
+        bcrypt.compare(password, foundUser.password, function (err, result) {
+          console.log(result);
+          if (result === true) {
+            res.redirect('/secrets')
+          } else {
+            res.render('login')
+          }
+        })
+      }
+    })
